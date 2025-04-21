@@ -48,7 +48,7 @@ My favourite packages:
 ```shell
 xbps-install -u tmux mc curl wget vim vim-colorschemes lynx pinfo # from my wiki
 xbps-install -u ncdu2 btop git lsof # more tools
-xbps-install -u man-pages-posix # POSIX API manual pages
+xbps-install -u man-pages-devel # API manual pages
 xbps-install -u bind-utils # nslookup
 xbps-install -u net-tools  # netstat
 ```
