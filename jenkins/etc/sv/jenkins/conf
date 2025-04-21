@@ -1,0 +1,4 @@
+# conf
+JAVAOPTS="-Djava.awt.headless=true -Xmx1024m"
+export JAVA_OPTS
+
