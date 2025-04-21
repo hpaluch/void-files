@@ -1,0 +1,23 @@
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT 
+-A INPUT -i lo -j ACCEPT 
+# ICMPv4 rules from: https://serverfault.com/questions/984232/whitelist-icmp-traffic-with-iptables
+-A INPUT -p icmp -m icmp --icmp-type destination-unreachable -j ACCEPT
+-A INPUT -p icmp -m icmp --icmp-type echo-request -j ACCEPT
+-A INPUT -p icmp -m icmp --icmp-type parameter-problem -j ACCEPT
+# Settings below are adapted from https://bitbucket.org/hpaluch/pi-settings.git
+# Enable DHCP response
+-A INPUT -p udp --dport 68 -j ACCEPT
+# identd  - send RST for quick identd response
+-A INPUT -p tcp --dport 113 -j REJECT --reject-with tcp-reset
+# Enable SSH
+-A INPUT -m state --state NEW -p tcp --dport 22 -j ACCEPT
+# Enable Web
+#-A INPUT -m state --state NEW -p tcp --dport 80 -j ACCEPT
+# Log dropped packets
+-A INPUT -m limit --limit 10/minute --limit-burst 10  -j LOG --log-prefix=INPUT-died: --log-level=warning
+-A FORWARD -m limit --limit 10/minute --limit-burst 10  -j LOG --log-prefix=FORWARD-died: --log-level=warning
+COMMIT

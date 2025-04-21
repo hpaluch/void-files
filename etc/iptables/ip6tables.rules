@@ -1,0 +1,34 @@
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -p icmp -j ACCEPT 
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT 
+-A INPUT -i lo -j ACCEPT 
+# Destination Unreachable
+-A INPUT -p ipv6-icmp --icmpv6-type 1 -j ACCEPT
+# Packet Too Big
+-A INPUT -p ipv6-icmp --icmpv6-type 2 -j ACCEPT
+# Time Exceeded
+-A INPUT -p ipv6-icmp --icmpv6-type 3 -j ACCEPT
+# Echo Request
+-A INPUT -p ipv6-icmp --icmpv6-type 128 -j ACCEPT
+# RA
+-A INPUT -p ipv6-icmp --icmpv6-type 134 -j ACCEPT
+# Neighbor Solicitation
+-A INPUT -p ipv6-icmp --icmpv6-type 135 -j ACCEPT
+# Neighbor Advertisement
+-A INPUT -p ipv6-icmp --icmpv6-type 136 -j ACCEPT
+# Settings below are adapted from https://bitbucket.org/hpaluch/pi-settings.git
+# Enable DHCPv6
+-A INPUT -p udp --dport 546 -j ACCEPT
+# identd  - send RST for quick identd response
+-A INPUT -p tcp --dport 113 -j REJECT --reject-with tcp-reset
+# Enable SSH
+-A INPUT -m state --state NEW -p tcp --dport 22 -j ACCEPT
+# Enable Web
+#-A INPUT -m state --state NEW -p tcp --dport 80 -j ACCEPT
+# Log dropped packets
+-A INPUT -m limit --limit 10/minute --limit-burst 10  -j LOG --log-prefix=INPUT-IPv6-died: --log-level=warning
+-A FORWARD -m limit --limit 10/minute --limit-burst 10  -j LOG --log-prefix=FORWARD-IPv6-died: --log-level=warning
+COMMIT
